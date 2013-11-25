@@ -25,33 +25,41 @@ module.exports = function (grunt) {
     var targetDir = path.resolve(targetDir);
     var appsDir = targetDir + '/apps';
 
-    // Waiting cloning to fill this.
-    var appPaths = [];
-    var depLength = depends.length;
-    depends.forEach(function (name, i, a) {
-      var url = repoURL + name + '.git';
-      var targetPath = appsDir + '/' + name;
-      appPaths.push(targetPath);
-      fs.mkdir(targetDir, function afterCreateOrNot(){
-        fs.exists(targetPath, function cloneOrNot(exists) {
-          if (exists) {
-            depLength -= 1;
-            if (0 === depLength)
-              cloneAllFinished(appPaths);
-          } else {
-            git.Repo.clone(url, targetPath, null, function cloneDone(error, repo) {
-              grunt.verbose.writeflags(url, 'Clone Gaia app done');
-              if (error)
-                throw error;
+    // Target dir should be 'gaia-essential'.
+    git.Repo.clone(repoURL + 'gaia-essential' + '.git', targetDir,
+      null, function cloneDone(error, repo) {
+      if (error)
+        throw error;
 
+      // Waiting cloning to fill this.
+      var appPaths = [];
+      var depLength = depends.length;
+      depends.forEach(function (name, i, a) {
+        var url = repoURL + name + '.git';
+        var targetPath = appsDir + '/' + name;
+        appPaths.push(targetPath);
+        fs.mkdir(targetDir, function afterCreateOrNot(){
+          fs.exists(targetPath, function cloneOrNot(exists) {
+            if (exists) {
               depLength -= 1;
               if (0 === depLength)
                 cloneAllFinished(appPaths);
-            });
-          }
+            } else {
+              git.Repo.clone(url, targetPath, null, function cloneDone(error, repo) {
+                grunt.verbose.writeflags(url, 'Clone Gaia app done');
+                if (error)
+                  throw error;
+
+                depLength -= 1;
+                if (0 === depLength)
+                  cloneAllFinished(appPaths);
+              });
+            }
+          });
         });
       });
-    })
+
+    });
 
     // Give directories to execute npm install,
     // which should trigger grunt, bower and other post-install things automatically.
@@ -59,16 +67,23 @@ module.exports = function (grunt) {
       var appLength = paths.length;
       paths.forEach(function doTask(appPath, i, a) {
         var spawn = require('child_process').spawn,
+            grnt = spawn('grunt', ['build', '--verbose'], {cwd: appPath}),
             inst = spawn('npm', ['install', '--save-dev'], {cwd: appPath});
+        grnt.stdout.on('data', function(data){
+        });
+        grnt.stderr.on('data', function(data){
+        });
         inst.stdout.on('data', function(data){
         });
         inst.stderr.on('data', function(data){
         });
         inst.on('close', function(code) {
           grunt.verbose.writeflags(appPath, 'Install app');
-          appLength -= 1;
-          if (0 === appLength)
-            done();
+          grnt.on('close', function(codeG){
+            appLength -= 1;
+            if (0 === appLength)
+              done();
+          });
         });
       });
     };
