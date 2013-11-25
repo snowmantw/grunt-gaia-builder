@@ -27,8 +27,6 @@ module.exports = function (grunt) {
 
     // Waiting cloning to fill this.
     var appPaths = [];
-
-    depends.unshift('gaia-essential');
     var depLength = depends.length;
     depends.forEach(function (name, i, a) {
       var url = repoURL + name + '.git';
@@ -60,12 +58,14 @@ module.exports = function (grunt) {
     var cloneAllFinished = function _cloneAllFinished(paths) {
       var appLength = paths.length;
       paths.forEach(function doTask(appPath, i, a) {
-        var exec = require('child_process').exec;
-        exec('npm install', {cwd: appPath}, function(err, stdout, stderr) {
+        var spawn = require('child_process').spawn,
+            inst = spawn('npm', ['install', '--save-dev'], {cwd: appPath});
+        inst.stdout.on('data', function(data){
+        });
+        inst.stderr.on('data', function(data){
+        });
+        inst.on('close', function(code) {
           grunt.verbose.writeflags(appPath, 'Install app');
-          if (err)
-            throw err
-          grunt.verbose.writeflags(stdout, 'Install app done');
           appLength -= 1;
           if (0 === appLength)
             done();
