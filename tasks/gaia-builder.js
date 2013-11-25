@@ -67,7 +67,7 @@ module.exports = function (grunt) {
       var appLength = paths.length;
       paths.forEach(function doTask(appPath, i, a) {
         var spawn = require('child_process').spawn,
-            grnt = spawn('grunt', ['build', '--verbose'], {cwd: appPath}),
+            grnt = spawn('grunt', ['merge', '--verbose'], {cwd: appPath}),
             inst = spawn('npm', ['install', '--save-dev'], {cwd: appPath});
         grnt.stdout.on('data', function(data){
         });
