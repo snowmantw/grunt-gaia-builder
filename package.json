@@ -1,0 +1,9 @@
+{
+  "author": "Greg Weng",
+  "version": "0.0.1",
+  "devDependencies": {
+    "grunt": "~0.4.0",
+    "nodegit": "~0.1.0"
+  },
+  "name": "grunt-gaia-builder"
+}
