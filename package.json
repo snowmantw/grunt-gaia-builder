@@ -1,0 +1,14 @@
+{
+  "author": "Greg Weng <gweng@mozilla.com>",
+  "version": "0.0.10",
+  "dependencies": {
+    "grunt": "~0.4.0",
+    "nodegit": "~0.1.0",
+    "gaia-profile": ""
+  },
+  "name": "grunt-gaia-builder",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/snowmantw/grunt-gaia-builder.git"
+  }
+}
