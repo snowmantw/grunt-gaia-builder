@@ -1,6 +1,6 @@
 {
   "author": "Greg Weng <gweng@mozilla.com>",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "dependencies": {
     "grunt": "~0.4.0",
     "nodegit": "~0.1.0",
