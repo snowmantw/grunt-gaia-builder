@@ -11,8 +11,8 @@ grunt.registerTask('gaiabuilder', function() {
   });
   var done = this.async();
 
-  if (! fs.existsSync(DEMO_PROFILE))
-    fs.mkdirSync(DEMO_PROFILE);
+  if (! fs.existsSync(opts.profilePath))
+    fs.mkdirSync(opts.profilePath);
 
   Builder(opts)
   .cloneEssential()
