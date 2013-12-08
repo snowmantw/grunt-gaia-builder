@@ -6,7 +6,7 @@ var git = require('nodegit'),
     fs = require('fs'),
     os = require('os'),
     path = require('path'),
-    profileBuilder = require('gaia-profile');
+    ProfileBuilder = require('gaia-profile');
 
 var Builder = function(opts) {
   return new Builder.o(opts);
@@ -17,10 +17,11 @@ Builder.o = function(opts) {
   this.__prevResult = null;
 
   this.depends = opts.depends;
+  if (-1 === this.depends.indexOf('system'))
+    this.depends.push('system');
   this.essentialPath = opts.essentialPath;
   this.appsPath = opts.essentialPath + '/apps';
   this.profilePath = opts.profilePath;
-  console.log('before map ++ ', this.depends);
   this.appPaths =
     this.depends.map((function(name) {
       return this.appsPath + '/' + name;
@@ -87,7 +88,10 @@ Builder.o.prototype._cloneRepoDone = function(err) {
   if (err)
     throw err;
   this.states['cloned-apps'] += 1;
-  if (this.depends.length == this.states['cloned-apps'])
+  var numRepos = -1 === this.depends.indexOf('system')
+               ? this.depends.length 
+               : this.depends.length - 1;
+  if (numRepos == this.states['cloned-apps'])
     this._next();
 };
 
@@ -100,13 +104,8 @@ Builder.o.prototype.buildDeps = function() {
         return;
       var appPath = this.appsPath + '/' + name;
       var spawn = require('child_process').spawn,
-          grnt = spawn('grunt', ['merge'], {cwd: appPath}),
           inst = spawn('npm', ['install'], {cwd: appPath});
 
-      grnt.stdout.on('data', function(data){
-      });
-      grnt.stderr.on('data', function(data){
-      });
       inst.stdout.on('data', function(data){
       });
       inst.stderr.on('data', function(data){
@@ -115,9 +114,22 @@ Builder.o.prototype.buildDeps = function() {
       var _next = this._buildDone.bind(this);
 
       inst.on('close', function(code) {
+
+        var grnt = spawn('grunt', ['merge'], {cwd: appPath});
+        grnt.stdout.on('data', function(data){
+        });
+        grnt.stderr.on('data', function(data){
+          console.log(data);
+        });
         grnt.on('close', function(codeG){
           _next();
         });
+
+        grnt.on('exit', function(codeG){
+        });
+      });
+
+      inst.on('exit', function() {
       });
     }).bind(this));
   });
@@ -126,7 +138,10 @@ Builder.o.prototype.buildDeps = function() {
 
 Builder.o.prototype._buildDone = function() {
   this.states['built-apps'] += 1;
-  if (this.depends.length == this.states['built-apps'])
+  var numRepos = -1 === this.depends.indexOf('system')
+               ? this.depends.length 
+               : this.depends.length - 1;
+  if (numRepos == this.states['built-apps'])
     this._next();
 };
 
@@ -135,7 +150,7 @@ Builder.o.prototype.buildProfile = function() {
     var buildCommand = (function(module) {
       return ProfileBuilder.build(module)
         .xpcshell(this.essentialPath + '/xulrunner-sdk-26/xulrunner-sdk/bin/XUL.framework/Versions/Current/xpcshell')
-        .runMozilla('xulrunner-sdk-26/xulrunner-sdk/bin/XUL.framework/Versions/Current/run-mozilla.sh')
+        .runMozilla(this.essentialPath + '/xulrunner-sdk-26/xulrunner-sdk/bin/XUL.framework/Versions/Current/run-mozilla.sh')
         .buildModulePath(this.essentialPath + '/build')
         .xpcshellCommonjs(this.essentialPath + '/build/xpcshell-commonjs.js')
         .done()
@@ -177,6 +192,11 @@ Builder.o.prototype.buildProfile = function() {
       });
     });
   });
+  return this;
+};
+
+Builder.o.prototype.fn = function(fn) {
+  this.__process.push(fn);
   return this;
 };
 
