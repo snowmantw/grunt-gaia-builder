@@ -1,4 +1,5 @@
 var fs = require('fs'),
+    grunt = require('grunt'),
     Builder = require('./lib/gaia-builder.js');
 
 grunt.registerTask('gaiabuilder', function() {
