@@ -100,7 +100,7 @@ Builder.o.prototype.buildDeps = function() {
       var appPath = this.appsPath + '/' + name;
       var spawn = require('child_process').spawn,
           grnt = spawn('grunt', ['merge', '--verbose'], {cwd: appPath}),
-          inst = spawn('npm', ['install', '--dev'], {cwd: appPath});
+          inst = spawn('npm', ['install'], {cwd: appPath});
 
       grnt.stdout.on('data', function(data){
       });

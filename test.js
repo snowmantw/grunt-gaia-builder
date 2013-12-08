@@ -1,4 +1,4 @@
-var Builder = require('./gaia-builder.js');
+var Builder = require('./tasks/gaia-builder.js');
 
 Builder({ 'depends': ['gaia-calendar']
         , 'essentialPath': '/tmp/essential-build'
