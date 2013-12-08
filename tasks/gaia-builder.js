@@ -20,6 +20,7 @@ Builder.o = function(opts) {
   this.essentialPath = opts.essentialPath;
   this.appsPath = opts.essentialPath + '/apps';
   this.profilePath = opts.profilePath;
+  console.log('before map ++ ', this.depends);
   this.appPaths =
     this.depends.map((function(name) {
       return this.appsPath + '/' + name;
@@ -99,18 +100,16 @@ Builder.o.prototype.buildDeps = function() {
         return;
       var appPath = this.appsPath + '/' + name;
       var spawn = require('child_process').spawn,
-          grnt = spawn('grunt', ['merge', '--verbose'], {cwd: appPath}),
+          grnt = spawn('grunt', ['merge'], {cwd: appPath}),
           inst = spawn('npm', ['install'], {cwd: appPath});
 
       grnt.stdout.on('data', function(data){
       });
       grnt.stderr.on('data', function(data){
-        console.log('grnt', data.toString());
       });
       inst.stdout.on('data', function(data){
       });
       inst.stderr.on('data', function(data){
-        console.log('npm ', data.toString());
       });
 
       var _next = this._buildDone.bind(this);
@@ -172,10 +171,8 @@ Builder.o.prototype.buildProfile = function() {
       make.stdout.on('data', function(data){
       });
       make.stderr.on('data', function(data){
-        console.log('EEE: ', data);
       });
       make.on('close', function(code) {
-        console.log('build done');
         _next();
       });
     });

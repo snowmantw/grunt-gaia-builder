@@ -11,4 +11,6 @@ Builder({ 'depends': ['gaia-calendar']
 .trace('cloneDeps')
 .buildDeps()
 .trace('buildDeps')
+.buildProfile()
+.trace('buildProfile')
 .done()
