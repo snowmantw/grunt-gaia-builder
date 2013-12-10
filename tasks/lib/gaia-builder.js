@@ -171,7 +171,7 @@ Builder.o.prototype.buildProfile = function() {
 
     // Need these to make the profile.
     ['preferences', 'settings', 'webapp-manifests',
-     'webapp-optimize', 'webapp-zip'].forEach(function(module) {
+     'webapp-optimize', 'webapp-zip', 'additional-extensions'].forEach(function(module) {
       finalCommand = finalCommand + '\n' + buildCommand(module);
      });
 
