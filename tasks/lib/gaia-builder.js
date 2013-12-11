@@ -156,7 +156,7 @@ Builder.o.prototype.extensions = function() {
     cp.stderr.on('data', function(data){
     });
     cp.on('close', function(code) {
-      _next();
+      this._next();
     });
   });
   return this;
