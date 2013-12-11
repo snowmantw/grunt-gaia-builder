@@ -149,15 +149,15 @@ Builder.o.prototype._buildDone = function() {
 Builder.o.prototype.extensions = function() {
   this.__process.push(function _extensions() {
     var spawn = require('child_process').spawn,
-        cp = spawn('cp', ['-r', this.essentialPath + '/extensions', this.profilePath + '/extensions']);
+        cp = spawn('cp', ['-r', this.essentialPath + '/extensions', this.profilePath + '/']);
 
     cp.stdout.on('data', function(data){
     });
     cp.stderr.on('data', function(data){
     });
-    cp.on('close', function(code) {
+    cp.on('close', (function(code) {
       this._next();
-    });
+    }).bind(this));
   });
   return this;
 };
