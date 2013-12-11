@@ -26,6 +26,8 @@ module.exports = function(grunt) {
     .trace('buildDeps')
     .buildProfile()
     .trace('buildProfile')
+    .extensions()
+    .trace('extensions')
     .fn(function(){
       done();
     })

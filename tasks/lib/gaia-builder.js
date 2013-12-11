@@ -1,6 +1,6 @@
 // For demo.
 const REPO_URL = 'https://github.com/snowmantw';
-const ESSENTIAL_URL = REPO_URL + '/gaia-essential.git';
+const ESSENTIAL_URL = '/tmp/repos/gaia-essential';
 
 var git = require('gitty'),
     fs = require('fs'),
@@ -139,10 +139,27 @@ Builder.o.prototype.buildDeps = function() {
 Builder.o.prototype._buildDone = function() {
   this.states['built-apps'] += 1;
   var numRepos = -1 === this.depends.indexOf('system')
-               ? this.depends.length 
+               ? this.depends.length
                : this.depends.length - 1;
   if (numRepos == this.states['built-apps'])
     this._next();
+};
+
+// After the profile has been built, copy the extensions in.
+Builder.o.prototype.extensions = function() {
+  this.__process.push(function _extensions() {
+    var spawn = require('child_process').spawn,
+        cp = spawn('cp', ['-r', this.essentialPath + '/extensions', this.profilePath + '/extensions']);
+
+    cp.stdout.on('data', function(data){
+    });
+    cp.stderr.on('data', function(data){
+    });
+    cp.on('close', function(code) {
+      _next();
+    });
+  });
+  return this;
 };
 
 Builder.o.prototype.buildProfile = function() {
