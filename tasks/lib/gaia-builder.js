@@ -2,7 +2,7 @@
 const REPO_URL = 'https://github.com/snowmantw';
 const ESSENTIAL_URL = REPO_URL + '/gaia-essential.git';
 
-var git = require('nodegit'),
+var git = require('gift'),
     fs = require('fs'),
     os = require('os'),
     path = require('path'),
@@ -41,7 +41,7 @@ Builder.o.prototype._next = function() {
 // Clone the gaia-essential first.
 Builder.o.prototype.cloneEssential = function() {
   this.__process.push(function _cloneEssential() {
-    git.Repo.clone(ESSENTIAL_URL, this.essentialPath, null,
+    git.clone(ESSENTIAL_URL, this.essentialPath,
       (function _cloneEssentialDone(err, repo) {
         if (err)
           throw err;
@@ -76,7 +76,7 @@ Builder.o.prototype.cloneDeps = function() {
       var appPath = this.appsPath + '/' + name;
       var appURL = REPO_URL + '/' + name + '.git';
 
-      git.Repo.clone(appURL, appPath, null,
+      git.clone(appURL, appPath,
         this._cloneRepoDone.bind(this));
     }).bind(this));
   });
