@@ -1,6 +1,6 @@
 // For demo.
 const REPO_URL = 'https://github.com/snowmantw';
-const ESSENTIAL_URL = '/tmp/repos/gaia-essential';
+const ESSENTIAL_URL = 'https://github.com/snowmantw/gaia-essential.git';
 
 var git = require('gitty'),
     fs = require('fs'),
